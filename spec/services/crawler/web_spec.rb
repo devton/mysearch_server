@@ -3,7 +3,11 @@ require "rails_helper"
 RSpec.describe Crawler::Web, :type => :service do
   describe ".index_from" do
     before do
-      FakeWeb.register_uri(:get, %r|http://www\.my-search\.example\.com/|, :body => "<a href='/internal_link'>internal</a>")
+      FakeWeb.register_uri(:get, %r|http://www\.my-search\.example\.com/|,
+        body: <<-HTML
+          <a href='/bad_url'>internal</a>
+        HTML
+      )
     end
 
     subject { ::CrawledUrl.find_for url }
@@ -15,12 +19,12 @@ RSpec.describe Crawler::Web, :type => :service do
       it { is_expected.not_to be_nil }
     end
 
-    # TODO: need to create ah negative expressions table
-    #context "when a link match on negative expressions" do
-    #  let(:url) { 'www.my-search.example.com/badurl' }
+    context "when a link match on negative expressions" do
+      pending '[NEED TO IMPLEMENT THE NEGATIVE EXPRESSIONS TABLE]'
+      #let(:url) { 'www.my-search.example.com/bad_url' }
 
-    #  before { Crawler::Web.index_from url }
-    #  it { is_expected.to be_nil }
-    #end
+      #before { Crawler::Web.index_from url }
+      #it { is_expected.to be_nil }
+    end
   end
 end
