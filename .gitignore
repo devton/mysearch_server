@@ -14,3 +14,4 @@
 
 # Rails things
 config/database.yml
+db/seeds/negative_expressions.rb
