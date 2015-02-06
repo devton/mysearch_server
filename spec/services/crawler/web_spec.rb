@@ -20,11 +20,17 @@ RSpec.describe Crawler::Web, :type => :service do
     end
 
     context "when a link match on negative expressions" do
-      pending '[NEED TO IMPLEMENT THE NEGATIVE EXPRESSIONS TABLE]'
-      #let(:url) { 'www.my-search.example.com/bad_url' }
+      let(:url) { 'www.my-search.example.com/bad_url' }
 
-      #before { Crawler::Web.index_from url }
-      #it { is_expected.to be_nil }
+      before do
+        create(:negative_expression, {
+          domains: ['www.my-search.example.com'],
+          expressions: ['/bad*']
+        })
+
+        Crawler::Web.index_from url
+      end
+      it { is_expected.to be_nil }
     end
   end
 end
