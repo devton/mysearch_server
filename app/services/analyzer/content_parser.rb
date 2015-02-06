@@ -18,8 +18,9 @@ module Analyzer
 
     def build_hash
         {
-          titles: parse_titles,
-          paragraphs: parse_paragraph,
+          relevant_titles: parse_titles,
+          relevant_paragraphs: parse_paragraph[0..2],
+          another_texts: remaning_content,
           strongs: parse_strongs,
           page_title: @page.title,
           page_meta_tags: parse_meta_tags,
@@ -28,14 +29,21 @@ module Analyzer
         }
     end
 
-    def parse_titles
-      @page.parsed.css('h1, h2, h3, h4, h5, h6').map do |element|
+    def remaning_content
+      collection = []
+      collection.push(parse_titles('h4, h5, h6'))
+      collection.push(parse_paragraph[3..-1])
+      collection.flatten
+    end
+
+    def parse_titles selectors = 'h1, h2, h3'
+      @page.parsed.css(selectors).map do |element|
         element.text.presence
       end.compact
     end
 
     def parse_paragraph
-      @page.parsed.css('p').map(&:text).compact
+      @paragraphs ||= @page.parsed.css('p').map(&:text).compact
     end
 
     def parse_strongs
