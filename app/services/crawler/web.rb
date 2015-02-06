@@ -12,7 +12,8 @@ module Crawler
     def index!
       @request = follow_link
 
-      if @request.response.status == 200 && Analyzer::UrlChecker.can_persist?(@url)
+      Rails.logger.info "[web/crawler] checking url -> #{@request.url}"
+      if @request.response.status == 200 && !::CrawledUrl.already_persisted?(@request.url)
         Rails.logger.info "[web/crawler] persisting url -> #{@request.url}"
         ::CrawledUrl.persist_from @request.url
         collect_links_from_request
