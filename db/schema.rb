@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150204041839) do
+ActiveRecord::Schema.define(version: 20150206014727) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,5 +30,12 @@ ActiveRecord::Schema.define(version: 20150204041839) do
   end
 
   add_index "crawled_urls", ["host"], name: "index_crawled_urls_on_host", using: :btree
+
+  create_table "negative_expressions", force: :cascade do |t|
+    t.text     "domains",     null: false, array: true
+    t.text     "expressions", null: false, array: true
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
 
 end
