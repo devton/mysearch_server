@@ -11,7 +11,6 @@ class NegativeExpression < ActiveRecord::Base
 
   def self.url_match? url, parser = ::Crawler::UrlParser
     uri = parser.parse url
-    expressions = expressions_for uri[:host]
-    expressions.with_path_regex(uri[:path]).exists?
+    expressions_for(uri[:host]).with_path_regex(uri[:path]).exists?
   end
 end
