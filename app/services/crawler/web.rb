@@ -28,11 +28,11 @@ module Crawler
       @urls_buffer.each do |url|
         from_buffer = @urls_buffer.delete(url)
 
-        puts "[web/crawler] - processing url #{from_buffer}"
+        Rails.logger.info "[web/crawler] - processing url #{from_buffer}"
         unless @valid_urls.include? from_buffer
           @valid_urls.push from_buffer
           @url = from_buffer
-          puts "[web/crawler] - inserted #{from_buffer} into valid_urls"
+          Rails.logger.info "[web/crawler] - inserted #{from_buffer} into valid_urls"
           collect_links!
         end
       end
