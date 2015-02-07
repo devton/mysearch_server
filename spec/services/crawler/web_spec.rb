@@ -1,36 +1,25 @@
 require "rails_helper"
 
 RSpec.describe Crawler::Web, :type => :service do
-  describe ".index_from" do
+  describe ".collect_links_from" do
+    let(:collected_links) {
+      [
+        'http://www.example.com/page_link_1.html',
+        'http://www.example.com/page_link_2.html',
+        'http://www.example.com/page_link_3.html',
+        'http://www.example.com/page_link_4.html',
+      ]
+    }
+
     before do
-      FakeWeb.register_uri(:get, %r|http://www\.my-search\.example\.com/|,
-        body: <<-HTML
-          <a href='/bad_url'>internal</a>
-        HTML
-      )
-    end
-
-    subject { ::CrawledUrl.find_for url }
-
-    context "when a link is valid" do
-      let(:url) { 'www.my-search.example.com' }
-
-      before { Crawler::Web.index_from url }
-      it { is_expected.not_to be_nil }
-    end
-
-    context "when a link match on negative expressions" do
-      let(:url) { 'www.my-search.example.com/bad_url' }
-
-      before do
-        create(:negative_expression, {
-          domains: ['www.my-search.example.com'],
-          expressions: ['/bad*']
-        })
-
-        Crawler::Web.index_from url
+      1.upto(4).each do |i|
+        FakeWeb.register_uri(:get, "http://www.example.com/page_link_#{i}.html", body: File.read(Rails.root + "spec/support/page_link_#{i}.html"))
       end
-      it { is_expected.not_to be_nil }
+    end
+
+    context "collect all internal url's from site" do
+      subject { Crawler::Web.collect_links_from "http://www.example.com/page_link_1.html" }
+      it { is_expected.to eq(collected_links)}
     end
   end
 end
