@@ -41,7 +41,7 @@ RSpec.describe Crawler::UrlParser, :type => :service do
           host: 'www.my-example.url.com',
           path: '/',
           fragment: nil,
-          query_strings: ['bar=foo', 'foo=bar']
+          query_strings: 'foo=bar&bar=foo'
         }
       }
       it { is_expected.to eq(url_attributes) }
@@ -55,7 +55,7 @@ RSpec.describe Crawler::UrlParser, :type => :service do
           host: 'www.my-example.url.com',
           path: '/',
           fragment: '#!/foo/bar',
-          query_strings: ['bar=foo', 'foo=bar']
+          query_strings:  'foo=bar&bar=foo'
         }
       }
       it { is_expected.to eq(url_attributes) }

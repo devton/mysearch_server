@@ -40,13 +40,6 @@ module Crawler
 
     def url_queries
       @queries ||= @url.query
-
-      if @queries
-        ordered_queries = CGI.parse(@queries)
-        @queries = ordered_queries.keys.sort.map do |x|
-          "#{x}=#{ordered_queries[x][0]}"
-        end
-      end
     rescue
       nil
     end
