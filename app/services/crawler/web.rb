@@ -1,18 +1,18 @@
 module Crawler
   class Web
-    attr_reader
+    attr_reader :valid_urls
 
     def self.collect_links_from url
       _ = new url
       _.collect_links!
-      _.get_valid_urls
+      _.valid_urls.uniq
     end
 
     def initialize url
       @url = URI url
+      @valid_urls = [@url.to_s]
+      @urls_buffer = []
       @host = @url.host
-
-      build_redis_collections
     end
 
     def collect_links!
@@ -20,39 +20,16 @@ module Crawler
       process_buffer if @request && response_ok?
     end
 
-    def valid_urls_key
-      "#{@host}_valid_urls"
-    end
-
-    def urls_buffer_key
-      "#{@host}_urls_buffer"
-    end
-
-    def get_valid_urls
-      JSON.parse $redis.get(valid_urls_key)
-    end
-
-    def get_urls_buffer
-      JSON.parse $redis.get(urls_buffer_key)
-    end
-
     protected
 
-    def build_redis_collections
-      $redis.set(valid_urls_key, [@url.to_s].to_json)
-      $redis.set(urls_buffer_key, [].to_json)
-    end
-
     def process_buffer
-      add_to_buffer links_without_query - get_valid_urls
-      buffer = get_urls_buffer
-
-      get_urls_buffer.each do |url|
-        from_buffer = buffer.delete(url)
+      save_buffer
+      @urls_buffer.each do |url|
+        from_buffer = @urls_buffer.delete(url)
 
         Rails.logger.info "[web/crawler] - processing url #{from_buffer}"
-        unless get_valid_urls.include? from_buffer
-          add_to_valid_urls [from_buffer]
+        unless @valid_urls.include? from_buffer
+          @valid_urls.push from_buffer
           @url = from_buffer
           Rails.logger.info "[web/crawler] - inserted #{from_buffer} into valid_urls"
           collect_links!
@@ -60,17 +37,13 @@ module Crawler
       end
     end
 
-    def add_to_valid_urls links
-      urls = get_valid_urls
-      $redis.set(valid_urls_key, urls.concat(links - urls))
+    def save_buffer
+      parsed_links = remove_query_from_links
+      diff_links = parsed_links - @valid_urls
+      @urls_buffer.concat(diff_links)
     end
 
-    def add_to_buffer links
-      buffer = get_urls_buffer
-      $redis.set(urls_buffer_key, buffer.concat(links - buffer))
-    end
-
-    def links_without_query
+    def remove_query_from_links
       @request.links.internal.map do |link|
         url = URI link
         url.query = nil
@@ -88,6 +61,5 @@ module Crawler
       Rails.logger.info "[web/crawler] checking url -> #{uri}"
       MetaInspector.new(uri, headers: { 'User-Agent' => 'mySearchServerCrawler'})
     end
-
   end
 end

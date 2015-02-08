@@ -28,4 +28,19 @@ namespace :benchmarks do
       end
     end
   end
+
+  desc 'Crawler'
+  task crawler_collect_links_from: :environment do
+    html = (1..50).inject("") { |t, i| t += "<a href='/page_#{i}.html'>link to page_#{i}</a>" }
+    FakeWeb.register_uri(:get, "http://example.com", body: html)
+    (1..50).each do |i|
+      FakeWeb.register_uri(:get, "http://example.com/page_#{i}.html", body: html)
+    end
+
+    Benchmark.bm do |x|
+      x.report("Crawler::Web") do
+        Crawler::Web.collect_links_from 'http://example.com'
+      end
+    end
+  end
 end
