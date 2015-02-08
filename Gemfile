@@ -11,6 +11,7 @@ gem 'jbuilder', '~> 2.0'
 
 # Crawler things
 gem 'metainspector'
+gem 'redis'
 
 group :development, :test do
   gem 'rspec-rails'

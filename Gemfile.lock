@@ -130,6 +130,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.4.2)
+    redis (3.2.0)
     rspec-core (3.1.7)
       rspec-support (~> 3.1.0)
     rspec-expectations (3.1.2)
@@ -194,6 +195,7 @@ DEPENDENCIES
   metainspector
   pg
   rails (= 4.2.0)
+  redis
   rspec-rails
   sass-rails (~> 5.0)
   spring
