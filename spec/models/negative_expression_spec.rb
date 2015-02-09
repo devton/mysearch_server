@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe NegativeExpression, :type => :model do
 
   describe ".expressions_for" do
-    subject { NegativeExpression.expressions_for 'example.com' }
+    subject { NegativeExpression.expressions_for 'http://example.com' }
 
     context "should get expressions" do
       context "when have a domain expression" do
@@ -64,12 +64,12 @@ RSpec.describe NegativeExpression, :type => :model do
     end
 
     context "when url matches with a negative expression" do
-      let(:url) { 'www.example.com/bad_url-foo' }
+      let(:url) { 'http://www.example.com/bad_url-foo' }
       it { is_expected.to be_truthy }
     end
 
     context "when url don't matches with a negative expression" do
-      let(:url) { 'www.example.com/good_url' }
+      let(:url) { 'http://www.example.com/good_url' }
       it { is_expected.to be_falsy }
     end
   end
