@@ -1,8 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Analyzer::UrlChecker, :type => :service do
-  describe ".can_persist?" do
-    subject { Analyzer::UrlChecker.can_persist? url }
+  describe ".valid?" do
+    subject { Analyzer::UrlChecker.valid? url }
 
     context "when url aleady persisted" do
       let(:url) { 'http://www.foo.bar.com' }
