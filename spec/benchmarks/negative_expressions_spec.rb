@@ -1,12 +1,13 @@
 require 'rails_helper'
 
 class FakeNegativeExpression < NegativeExpression
+  @@cached_expressions = {}
+
   def self.url_match_on_ruby? url
     uri = URI url
-    expressions = expressions_for(uri.host)#.with_path_regex(uri.path).exists?
-    expressions.pluck(:expressions).flatten.any? do |expression|
-      uri.path.match expression
-    end
+    @@cached_expressions[uri] ||= expressions_for(uri.host).pluck(:expressions).flatten
+    expressions = @@cached_expressions[uri]
+    expressions.any? { |expression| uri.path.match expression }
   end
 end
 
