@@ -11,12 +11,6 @@ module Crawler
     end
 
     def parse!
-      build_hash
-    end
-
-    protected
-
-    def build_hash
       {
         url_scheme: @url.scheme,
         host: @url.host,
@@ -25,6 +19,8 @@ module Crawler
         query_strings: url_queries
       }
     end
+
+    protected
 
     def url_path
       return "/" if @url.path.blank?
