@@ -3,6 +3,10 @@ namespace :crawler do
   task :start, [:url] => [:environment] do |t, args|
     Rails.logger.info "starting crawler on --> #{args[:url]}"
     links = Crawler::Web.collect_links_from args[:url]
-    Crawler::Recorder.persist_from links
+    CrawledUrl.transaction do
+      links.each do |url|
+        CrawledUrl.persist_from url
+      end
+    end
   end
 end
